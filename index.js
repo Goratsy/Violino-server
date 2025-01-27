@@ -1,13 +1,22 @@
 import * as dotenv from 'dotenv';
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const { Pool } = require('pg');
-const bodyParser = require('body-parser');
-const bcrypt = require('bcrypt');
+dotenv.config()
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import pkg from 'pg';
+const { Pool } = pkg;
+import bcrypt from 'bcrypt'; // in the future: download another library
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 4000;
 
+app.use(
+    cors({
+      origin: 'http://localhost:5173',
+      preflightContinue: true,
+    }),
+);
 // Middleware
 app.use(bodyParser.json());
 
@@ -100,9 +109,6 @@ app.delete('/user_phones/:id', authenticateToken, async (req, res) => {
     }
 });
 
-
-
-
 // Managers: Log a manager login
 app.post('/managers/logins', async (req, res) => {
     const { login, password, date_of_login, device, ip_address } = req.body;
@@ -138,4 +144,8 @@ app.get('/managers', authenticateToken, async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
+});
+
+app.get('/test', async (req, res) => {
+    res.json('test connection');
 });
