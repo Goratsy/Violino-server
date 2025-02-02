@@ -27,10 +27,10 @@ app.use(bodyParser.json());
 
 // PostgreSQL connection
 const POSTGRE_SQL_POOL = new Pool({
-    user: 'gor',
-    host: 'localhost',
-    database: 'postgres',
-    password: process.env.PASSWORD_POSTGRE_SQL,
+    user: 'goratsy',
+    host: '81.177.220.20',
+    database: 'violinoDB', // local 'postgres'
+    password: process.env.PASSWORD_POSTGRE_SQL_PROD,
     port: 5432,
 });
 
