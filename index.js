@@ -94,10 +94,10 @@ app.put('/user_phones', authenticateToken, async (req, res) => {
     const updates = req.body;
     try {
         for (const update of updates) {
-            const { id, name, phone, date_of_send, information_about_user } = update;
+            const { user_phone_id, name, phone, date_of_send, information_about_user } = update;
             await POSTGRE_SQL_POOL.query(
                 'UPDATE user_phones SET name = $1, phone = $2, date_of_send = $3, information_about_user = $4 WHERE user_phone_id = $5',
-                [name, phone, date_of_send, information_about_user, id]
+                [name, phone, date_of_send, information_about_user, user_phone_id]
             );
         }
         res.status(200).json({ message: 'User phones updated successfully' });
@@ -171,9 +171,11 @@ app.post('/managers/logins', async (req, res) => {
         );
 
         const token = jwt.sign({ id: manager.rows[0].manager_id }, JWT_SECRET, { expiresIn: '1h' });
+
+        
         res.status(201).json({ token });
     } catch (err) {
-        console.log(err);
+
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
