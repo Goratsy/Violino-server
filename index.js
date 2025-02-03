@@ -51,17 +51,21 @@ const authenticateToken = (req, res, next) => {
 
 // Start Server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    if (process.env.PROD) {
+        console.log(`Server is running on http://${process.env.DB_HOST_URL}:${PORT}`);
+    } else {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    }
 });
 
 // Routes
 
-app.get('/authentification_manager', authenticateToken, (req, res) => {
+app.get('api/authentification_manager', authenticateToken, (req, res) => {
     res.status(200).json({ message: 'Authentification successful' });
 })
 
 // UserPhones: Retrieve all user phones
-app.get('/user_phones', authenticateToken, async (req, res) => {
+app.get('api/user_phones', authenticateToken, async (req, res) => {
     try {
         const result = await POSTGRE_SQL_POOL.query('SELECT * FROM user_phones');
         res.json(result.rows);
@@ -71,7 +75,7 @@ app.get('/user_phones', authenticateToken, async (req, res) => {
 });
 
 // UserPhones: Create a new user phone
-app.post('/user_phones', async (req, res) => {
+app.post('api/user_phones', async (req, res) => {
     const { name, phone, date_of_send, information_about_user } = req.body;
     try {
         const existingPhone = await POSTGRE_SQL_POOL.query('SELECT * FROM user_phones WHERE phone = $1', [phone]);
@@ -90,7 +94,7 @@ app.post('/user_phones', async (req, res) => {
 });
 
 // UserPhones: Update multiple user phones
-app.put('/user_phones', authenticateToken, async (req, res) => {
+app.put('api/user_phones', authenticateToken, async (req, res) => {
     const updates = req.body;
     try {
         for (const update of updates) {
@@ -107,7 +111,7 @@ app.put('/user_phones', authenticateToken, async (req, res) => {
 });
 
 // UserPhones: Delete a specific user phone by ID
-app.delete('/user_phones/:id', authenticateToken, async (req, res) => {
+app.delete('api/user_phones/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     try {
         await POSTGRE_SQL_POOL.query('DELETE FROM user_phones WHERE user_phone_id = $1', [id]);
@@ -118,7 +122,7 @@ app.delete('/user_phones/:id', authenticateToken, async (req, res) => {
 });
 
 // Managers: Log a manager login
-app.post('/managers/logins', async (req, res) => {
+app.post('api/managers/logins', async (req, res) => {
     const { login, password, date_of_login, device, ip_address } = req.body;
     try {
         const is_in_black_list_ip = await POSTGRE_SQL_POOL.query('SELECT ip FROM black_list_ip WHERE ip = $1', [ip_address]);
@@ -181,7 +185,7 @@ app.post('/managers/logins', async (req, res) => {
 });
 
 // Protected example route
-app.get('/managers', authenticateToken, async (req, res) => {
+app.get('api/managers', authenticateToken, async (req, res) => {
     try {
         // const result = await POSTGRE_SQL_POOL.query('SELECT manager_id, manager_name, login FROM manager');
         const result = await POSTGRE_SQL_POOL.query('SELECT login_history.*, manager.manager_name, manager.login FROM login_history JOIN manager ON manager.manager_id = login_history.manager_id');
@@ -191,17 +195,6 @@ app.get('/managers', authenticateToken, async (req, res) => {
     }
 });
 
-app.get('/test', async (req, res) => {
+app.get('api/test', async (req, res) => {
     res.json('test connection');
 });
-
-
-app.get('/test_db', async (req, res) => {
-    try {
-        let db_data = await POSTGRE_SQL_POOL.query('SELECT * FROM user_phones');
-        res.json(db_data['rows']);
-    } catch (error) {
-        res.json('error db');
-    }
-});
-
