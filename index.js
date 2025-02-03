@@ -89,6 +89,7 @@ app.post('/api/user_phones', async (req, res) => {
         );
         res.status(201).json({ message: 'User phone created successfully' });
     } catch (err) {
+        console.log(err);
         res.status(500).json({ error: `Internal Server Error. ${err}` });
     }
 });
@@ -106,7 +107,6 @@ app.put('/api/user_phones', authenticateToken, async (req, res) => {
         }
         res.status(200).json({ message: 'User phones updated successfully' });
     } catch (err) {
-        console.log(err);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
