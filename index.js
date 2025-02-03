@@ -60,12 +60,12 @@ app.listen(PORT, () => {
 
 // Routes
 
-app.get('api/authentification_manager', authenticateToken, (req, res) => {
+app.get('/api/authentification_manager', authenticateToken, (req, res) => {
     res.status(200).json({ message: 'Authentification successful' });
 })
 
 // UserPhones: Retrieve all user phones
-app.get('api/user_phones', authenticateToken, async (req, res) => {
+app.get('/api/user_phones', authenticateToken, async (req, res) => {
     try {
         const result = await POSTGRE_SQL_POOL.query('SELECT * FROM user_phones');
         res.json(result.rows);
@@ -75,7 +75,7 @@ app.get('api/user_phones', authenticateToken, async (req, res) => {
 });
 
 // UserPhones: Create a new user phone
-app.post('api/user_phones', async (req, res) => {
+app.post('/api/user_phones', async (req, res) => {
     const { name, phone, date_of_send, information_about_user } = req.body;
     try {
         const existingPhone = await POSTGRE_SQL_POOL.query('SELECT * FROM user_phones WHERE phone = $1', [phone]);
@@ -94,7 +94,7 @@ app.post('api/user_phones', async (req, res) => {
 });
 
 // UserPhones: Update multiple user phones
-app.put('api/user_phones', authenticateToken, async (req, res) => {
+app.put('/api/user_phones', authenticateToken, async (req, res) => {
     const updates = req.body;
     try {
         for (const update of updates) {
@@ -111,7 +111,7 @@ app.put('api/user_phones', authenticateToken, async (req, res) => {
 });
 
 // UserPhones: Delete a specific user phone by ID
-app.delete('api/user_phones/:id', authenticateToken, async (req, res) => {
+app.delete('/api/user_phones/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     try {
         await POSTGRE_SQL_POOL.query('DELETE FROM user_phones WHERE user_phone_id = $1', [id]);
@@ -122,7 +122,7 @@ app.delete('api/user_phones/:id', authenticateToken, async (req, res) => {
 });
 
 // Managers: Log a manager login
-app.post('api/managers/logins', async (req, res) => {
+app.post('/api/managers/logins', async (req, res) => {
     const { login, password, date_of_login, device, ip_address } = req.body;
     try {
         const is_in_black_list_ip = await POSTGRE_SQL_POOL.query('SELECT ip FROM black_list_ip WHERE ip = $1', [ip_address]);
@@ -185,7 +185,7 @@ app.post('api/managers/logins', async (req, res) => {
 });
 
 // Protected example route
-app.get('api/managers', authenticateToken, async (req, res) => {
+app.get('/api/managers', authenticateToken, async (req, res) => {
     try {
         // const result = await POSTGRE_SQL_POOL.query('SELECT manager_id, manager_name, login FROM manager');
         const result = await POSTGRE_SQL_POOL.query('SELECT login_history.*, manager.manager_name, manager.login FROM login_history JOIN manager ON manager.manager_id = login_history.manager_id');
@@ -195,6 +195,6 @@ app.get('api/managers', authenticateToken, async (req, res) => {
     }
 });
 
-app.get('api/test', async (req, res) => {
+app.get('/api/test', async (req, res) => {
     res.json('test connection');
 });
