@@ -30,7 +30,7 @@ const POSTGRE_SQL_POOL = new Pool({
     user: process.env.DB_USER_NAME, // gor
     host: process.env.DB_HOST_URL, // localhost
     database:  process.env.DB_NAME, // postgres
-    password: process.env.PASSWORD_POSTGRE_SQL_PROD,
+    password: process.env.PROD ? process.env.PASSWORD_POSTGRE_SQL_PROD : process.env.PASSWORD_POSTGRE_SQL,
     port: 5432,
 });
 
@@ -116,7 +116,7 @@ app.delete('/api/user_phones/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     try {
         await POSTGRE_SQL_POOL.query('DELETE FROM user_phones WHERE user_phone_id = $1', [id]);
-        res.status(204).send();
+        res.status(200).json({message: `The user with ${id} is deleted successufully`});
     } catch (err) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
